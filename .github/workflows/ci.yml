@@ -31,4 +31,4 @@ jobs:
 
       - name: Run independent unit tests
         run: |
-          python -m pytest tests/test_stops_unit.py -v
+          python -m pytest tests/test_stops_unit.py tests/test_routes_unit.py -v

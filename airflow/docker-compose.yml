@@ -1,0 +1,19 @@
+services:
+  airflow:
+    image: apache/airflow:3.1.0
+    container_name: german_transport_airflow
+    ports:
+      - "8080:8080"
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      _PIP_ADDITIONAL_REQUIREMENTS: "duckdb pandas pyarrow requests pytest"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ../src:/opt/airflow/project/src
+      - ../sql:/opt/airflow/project/sql
+      - ../data:/opt/airflow/project/data
+      - ../tests:/opt/airflow/project/tests
+    working_dir: /opt/airflow/project
+    command: standalone

@@ -15,14 +15,12 @@ class LocalStorage:
         if not isinstance(object_key, str) or not object_key:
             raise ValueError("Object key must be a non-empty string.")
 
-        # Use forward slashes for S3-compatible object keys.
         if "\\" in object_key:
             raise ValueError("Backslashes are not allowed in object keys.")
 
         if object_key.startswith("/"):
             raise ValueError("Absolute paths are not allowed.")
 
-        # Reject Windows drive paths and unsafe path components.
         if ":" in object_key:
             raise ValueError("Colons are not allowed in object keys.")
 
@@ -33,7 +31,6 @@ class LocalStorage:
 
         destination = (self.base_dir / Path(*parts)).resolve()
 
-        # Ensure the destination remains inside the storage directory.
         if not destination.is_relative_to(self.base_dir):
             raise ValueError(
                 "Object key points outside the storage directory."
@@ -58,7 +55,7 @@ class LocalStorage:
             exist_ok=True,
         )
 
-        shutil.copy2(source, destination)
+        shutil.copyfile(source, destination)
 
         return destination
 
@@ -79,6 +76,6 @@ class LocalStorage:
             exist_ok=True,
         )
 
-        shutil.copy2(source, destination)
+        shutil.copyfile(source, destination)
 
         return destination

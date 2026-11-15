@@ -1,3 +1,4 @@
+
 from datetime import datetime
 from pathlib import Path
 import subprocess
@@ -10,10 +11,32 @@ PROJECT_DIR = Path("/opt/airflow/project")
 
 
 def run_script(script_name):
+    """Run a project script and fail the task if execution fails."""
+
     script_path = PROJECT_DIR / "src" / script_name
 
     subprocess.run(
         ["python", str(script_path)],
+        cwd=PROJECT_DIR,
+        check=True,
+    )
+
+
+def run_cloud_ingestion():
+    """Stage and retrieve GTFS data through the local cloud workflow."""
+
+    subprocess.run(
+        ["python", "-m", "src.cloud.run_gtfs_ingestion"],
+        cwd=PROJECT_DIR,
+        check=True,
+    )
+
+
+def run_tests():
+    """Run the project quality checks."""
+
+    subprocess.run(
+        ["python", "-m", "pytest", "tests/", "-q"],
         cwd=PROJECT_DIR,
         check=True,
     )
@@ -27,6 +50,11 @@ with DAG(
     catchup=False,
     tags=["transport", "gtfs", "data-engineering"],
 ) as dag:
+
+    cloud_ingestion = PythonOperator(
+        task_id="cloud_ingestion",
+        python_callable=run_cloud_ingestion,
+    )
 
     ingest = PythonOperator(
         task_id="ingest_gtfs",
@@ -70,18 +98,19 @@ with DAG(
         op_args=["run_gold.py"],
     )
 
-    def run_tests():
-        subprocess.run(
-            ["python", "-m", "pytest", "tests/", "-q"],
-            cwd=PROJECT_DIR,
-            check=True,
-        )
-
     tests = PythonOperator(
         task_id="run_quality_tests",
         python_callable=run_tests,
     )
 
-    ingest >> clean_stops >> clean_routes >> clean_trips
-    clean_trips >> clean_stop_times >> check_relationships
-    check_relationships >> gold >> tests
+    (
+        cloud_ingestion
+        >> ingest
+        >> clean_stops
+        >> clean_routes
+        >> clean_trips
+        >> clean_stop_times
+        >> check_relationships
+        >> gold
+        >> tests
+    )

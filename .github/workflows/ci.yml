@@ -9,6 +9,7 @@ on:
 
 jobs:
   test:
+    name: Python Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -19,16 +20,17 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+          cache: pip
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python -m pip install -r requirements.txt
 
       - name: Check Python syntax
         run: |
           python -m compileall -q src tests airflow/dags
 
-      - name: Run independent unit tests
+      - name: Run all project tests
         run: |
-          python -m pytest tests/test_stops_unit.py tests/test_routes_unit.py tests/test_trips_unit.py tests/test_stop_times_unit.py -v
+          python -m pytest tests/ -v

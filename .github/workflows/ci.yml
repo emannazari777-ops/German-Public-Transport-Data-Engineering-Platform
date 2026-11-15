@@ -31,6 +31,17 @@ jobs:
         run: |
           python -m compileall -q src tests airflow/dags
 
-      - name: Run all project tests
+      - name: Run data-independent tests
         run: |
-          python -m pytest tests/ -v
+          python -m pytest \
+            tests/test_cloud_integrity.py \
+            tests/test_cloud_storage.py \
+            tests/test_dead_letter_queue.py \
+            tests/test_gtfs_consumer.py \
+            tests/test_gtfs_event.py \
+            tests/test_message_queue.py \
+            tests/test_routes_unit.py \
+            tests/test_stops_unit.py \
+            tests/test_stop_times_unit.py \
+            tests/test_trips_unit.py \
+            -v

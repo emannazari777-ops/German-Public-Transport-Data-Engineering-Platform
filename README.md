@@ -245,10 +245,13 @@ Tests cover:
 | Environment | Result |
 |---|---|
 | Windows local environment | 76 tests passed |
+| Fresh GitHub clone | 76 tests passed in 3.45 seconds |
 | GitHub Actions CI | 50 tests passed |
 | Airflow full DAG execution | 9 of 9 tasks successful |
 
-The latest verified GitHub Actions run completed successfully for commit `46d33ec` on November 15, 2026.
+The latest verified GitHub Actions run completed successfully for commit `47b90fa` on November 15, 2026.
+
+A fresh clone of the repository was also tested successfully. Bronze ingestion, Silver transformations, referential integrity checks, Gold analytics, and all 76 automated tests completed without errors.
 
 GitHub Actions runs dataset-independent tests because the large GTFS and Parquet datasets are not committed to the repository.
 
@@ -265,20 +268,20 @@ The complete dataset-dependent test suite is executed locally after preparing th
 - Git.
 - Access to the VBB GTFS dataset.
 
-### Step 1 — Clone the Repository
+### Step 1 - Clone the Repository
 
 ```bash
 git clone https://github.com/emannazari777-ops/German-Public-Transport-Data-Engineering-Platform.git
 cd German-Public-Transport-Data-Engineering-Platform
 ```
 
-### Step 2 — Install Python Dependencies
+### Step 2 - Install Python Dependencies
 
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-### Step 3 — Prepare the GTFS Dataset
+### Step 3 - Prepare the GTFS Dataset
 
 Download a compatible GTFS archive from the VBB data source and place it at:
 
@@ -288,7 +291,7 @@ The archive must contain the GTFS files listed in the Data Source section.
 
 The dataset is not included in the repository.
 
-### Step 4 — Start Apache Airflow
+### Step 4 - Start Apache Airflow
 
 ```bash
 docker compose -f airflow/docker-compose.yml up -d
@@ -300,7 +303,7 @@ Open the Airflow interface:
 
 http://localhost:8080
 
-### Step 5 — Execute the Pipeline
+### Step 5 - Execute the Pipeline
 
 In the Airflow interface:
 
@@ -310,7 +313,7 @@ In the Airflow interface:
 4. Monitor the nine tasks.
 5. Confirm that the DAG finishes successfully.
 
-### Step 6 — Inspect the Results
+### Step 6 - Inspect the Results
 
 After successful execution, check:
 
@@ -323,7 +326,7 @@ The Gold directory should contain:
 - `top_stops.parquet`
 - `top_routes.parquet`
 
-### Step 7 — Run Local Tests
+### Step 7 - Run Local Tests
 
 From the project root:
 

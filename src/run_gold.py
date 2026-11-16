@@ -1,3 +1,4 @@
+
 from pathlib import Path
 
 import duckdb
@@ -10,6 +11,8 @@ GOLD_DIR = PROJECT_ROOT / "data" / "gold"
 ANALYSES = {
     "top_stops": "top_stops.sql",
     "top_routes": "top_routes.sql",
+    "stop_connectivity": "stop_connectivity.sql",
+    "service_by_weekday": "service_by_weekday.sql",
 }
 
 

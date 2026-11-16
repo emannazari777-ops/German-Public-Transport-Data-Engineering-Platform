@@ -1,3 +1,4 @@
+
 from pathlib import Path
 from zipfile import ZipFile
 import shutil
@@ -13,6 +14,8 @@ REQUIRED_FILES = [
     "routes.txt",
     "trips.txt",
     "stop_times.txt",
+    "calendar.txt",
+    "calendar_dates.txt",
 ]
 
 

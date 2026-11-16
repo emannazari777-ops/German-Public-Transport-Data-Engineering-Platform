@@ -86,6 +86,12 @@ with DAG(
         op_args=["clean_stop_times.py"],
     )
 
+    clean_calendar = PythonOperator(
+        task_id="clean_calendar",
+        python_callable=run_script,
+        op_args=["clean_calendar.py"],
+    )
+
     check_relationships = PythonOperator(
         task_id="check_relationships",
         python_callable=run_script,
@@ -96,6 +102,12 @@ with DAG(
         task_id="build_gold",
         python_callable=run_script,
         op_args=["run_gold.py"],
+    )
+
+    quality_report = PythonOperator(
+        task_id="generate_quality_report",
+        python_callable=run_script,
+        op_args=["generate_quality_report.py"],
     )
 
     tests = PythonOperator(
@@ -110,7 +122,9 @@ with DAG(
         >> clean_routes
         >> clean_trips
         >> clean_stop_times
+        >> clean_calendar
         >> check_relationships
         >> gold
+        >> quality_report
         >> tests
     )

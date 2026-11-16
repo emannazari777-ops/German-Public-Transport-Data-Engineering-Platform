@@ -34,6 +34,9 @@ jobs:
       - name: Run data-independent tests
         run: |
           python -m pytest \
+            tests/test_calendar_unit.py \
+            tests/test_manifest_unit.py \
+            tests/test_quality_report_unit.py \
             tests/test_cloud_integrity.py \
             tests/test_cloud_storage.py \
             tests/test_dead_letter_queue.py \

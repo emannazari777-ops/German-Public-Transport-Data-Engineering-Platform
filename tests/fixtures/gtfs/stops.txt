@@ -1,0 +1,5 @@
+
+stop_id,stop_name,stop_lat,stop_lon
+STOP001,Berlin Central Station,52.5251,13.3694
+STOP002,Berlin Alexanderplatz,52.5219,13.4132
+STOP003,Berlin Zoologischer Garten,52.5070,13.3325

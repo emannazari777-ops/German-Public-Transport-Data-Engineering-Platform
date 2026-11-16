@@ -62,6 +62,12 @@ with DAG(
         op_args=["ingest_gtfs.py"],
     )
 
+    manifest = PythonOperator(
+        task_id="create_manifest",
+        python_callable=run_script,
+        op_args=["create_manifest.py"],
+    )
+
     clean_stops = PythonOperator(
         task_id="clean_stops",
         python_callable=run_script,
@@ -118,6 +124,7 @@ with DAG(
     (
         cloud_ingestion
         >> ingest
+        >> manifest
         >> clean_stops
         >> clean_routes
         >> clean_trips

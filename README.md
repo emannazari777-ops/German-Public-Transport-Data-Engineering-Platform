@@ -1,120 +1,171 @@
 
 # German Public Transport Data Engineering Platform
 
-**An end-to-end Data Engineering platform for processing, validating, analyzing, and visualizing public transport timetable data using Python, DuckDB, Apache Airflow, Docker, Streamlit, and local cloud simulation.**
+**An end-to-end data engineering platform for processing, validating, analyzing, and visualizing German public transport timetable data.**
 
-**Project Author:** Eman Nazari
-
+**Author:** Eman Nazari  
 **Repository:** https://github.com/emannazari777-ops/German-Public-Transport-Data-Engineering-Platform
+
+---
 
 ## 1. Project Overview
 
-The German Public Transport Data Engineering Platform is a practical data engineering project that processes public transportation data using the General Transit Feed Specification (GTFS).
+The German Public Transport Data Engineering Platform is a practical data engineering project built around the General Transit Feed Specification (GTFS).
 
-The current implementation uses timetable data from the Berlin–Brandenburg region of Germany, provided by Verkehrsverbund Berlin-Brandenburg (VBB).
+The platform processes public transport timetable data through a Bronze, Silver, and Gold architecture. It combines Python, DuckDB, Apache Airflow, Docker, PostgreSQL, and Streamlit to demonstrate the main stages of a modern data engineering workflow.
 
-The project demonstrates:
+The current implementation uses GTFS data from the **Berlin–Brandenburg region of Germany**, provided by Verkehrsverbund Berlin-Brandenburg (VBB).
+
+The platform runs locally without requiring paid cloud services.
+
+### Key Features
 
 - GTFS data ingestion and validation
 - Bronze, Silver, and Gold data architecture
-- Local cloud-style object storage and event-driven messaging
-- Automated data processing with Apache Airflow
-- SQL analytics using DuckDB
-- Data quality monitoring and referential integrity checks
-- Dataset metadata and SHA-256 integrity tracking
-- Interactive analytics with Streamlit and Plotly
+- Local S3-style object storage simulation
+- Local SQS-style event-driven messaging
+- Automated data pipelines using Apache Airflow
+- Data processing and SQL analytics using DuckDB
+- PostgreSQL analytical database
+- Data quality validation and monitoring
+- SHA-256 integrity verification
+- Interactive Streamlit dashboard
 - Automated testing with Pytest
 - Continuous integration with GitHub Actions
 
-The platform runs locally without requiring paid AWS services.
+> **Important:** The current project uses local cloud simulations rather than actual AWS services. Its geographic coverage is Berlin–Brandenburg, not all of Germany.
+
+---
 
 ## 2. Project Objectives
 
-The main objectives are to:
+The project aims to:
 
-1. Build a reproducible end-to-end data pipeline.
-2. Process large GTFS timetable datasets.
-3. Organize raw, cleaned, and analytical data into separate layers.
-4. Validate identifiers, relationships, and data quality.
-5. Generate analytical datasets using SQL.
-6. Automate processing through Apache Airflow.
-7. Simulate cloud storage and message-driven ingestion.
-8. Visualize processed data through an interactive dashboard.
-9. Verify functionality through automated tests.
-10. Prepare the architecture for future cloud integration.
+1. Build an end-to-end data engineering workflow.
+2. Process large public transport timetable datasets.
+3. Implement a structured Bronze–Silver–Gold data architecture.
+4. Clean and validate GTFS data.
+5. Perform analytical transformations using SQL.
+6. Automate data processing through Apache Airflow.
+7. Demonstrate event-driven ingestion concepts.
+8. Store analytical results in PostgreSQL.
+9. Present data through an interactive dashboard.
+10. Validate the system through automated testing.
+
+---
 
 ## 3. Technology Stack
 
 | Technology | Purpose |
 |---|---|
-| Python | Data ingestion, processing, and automation |
-| Pandas | Data cleaning and transformation |
-| DuckDB | SQL analytics and data processing |
-| Apache Parquet | Columnar data storage |
-| Apache Airflow 3.1 | Pipeline orchestration |
-| Docker / Docker Compose | Containerized execution |
+| Python | Data processing and pipeline development |
+| Pandas | Data cleaning and validation |
+| DuckDB | SQL processing and analytical transformations |
+| Apache Parquet | Efficient columnar data storage |
+| Apache Airflow 3.1 | Workflow orchestration |
+| Docker | Containerized execution |
+| Docker Compose | Container configuration and networking |
+| PostgreSQL 16 | Analytical database |
+| Psycopg 3 | Python and PostgreSQL integration |
 | Streamlit | Interactive analytics dashboard |
 | Plotly | Interactive data visualization |
 | Pytest | Automated testing |
 | GitHub Actions | Continuous integration |
-| LocalStorage | Local S3-style object storage simulation |
-| LocalMessageQueue | Local SQS-style messaging simulation |
-| SHA-256 | File integrity verification |
-| Git / GitHub | Version control and collaboration |
+| SHA-256 | Data integrity verification |
+| Git / GitHub | Version control and project documentation |
 
-The current cloud components are local Python implementations.
+### Cloud Architecture Concepts
 
-The project does not currently require actual AWS infrastructure.
+The project includes local implementations of:
+
+- S3-style object storage
+- SQS-style message processing
+- Event-driven ingestion
+- Message acknowledgements and retries
+- Dead-letter queue behavior
+
+These components demonstrate cloud engineering concepts without provisioning actual AWS infrastructure.
+
+---
 
 ## 4. Data Source
 
-The project processes publicly available GTFS timetable data from Verkehrsverbund Berlin-Brandenburg (VBB).
-
 **Data provider:** Verkehrsverbund Berlin-Brandenburg (VBB)
 
-**Provider information:**
-
+**Provider information:**  
 https://unternehmen.vbb.de/digitale-services/datensaetze/
 
-**Geographic coverage:** Berlin–Brandenburg, Germany.
+**Geographic coverage:** Berlin–Brandenburg, Germany
 
-The current implementation does not process public transport data from all German regions.
+**Data format:** General Transit Feed Specification (GTFS)
 
 The GTFS archive is stored locally at:
 
 `data/raw/gtfs.zip`
 
-The primary GTFS files include:
+### Main GTFS Files
 
-- `agency.txt`
-- `stops.txt`
-- `routes.txt`
-- `trips.txt`
-- `stop_times.txt`
-- `calendar.txt`
-- `calendar_dates.txt`
+| File | Description |
+|---|---|
+| `agency.txt` | Transport operators |
+| `stops.txt` | Public transport stops and stations |
+| `routes.txt` | Transport routes |
+| `trips.txt` | Scheduled trips |
+| `stop_times.txt` | Scheduled arrival and departure events |
+| `calendar.txt` | Regular service calendars |
+| `calendar_dates.txt` | Service exceptions |
 
-Raw and processed datasets are excluded from Git because of their size.
+Raw and generated datasets are not committed to GitHub because of their size.
 
-The original archive download URL and download timestamp have not been independently verified in the project's metadata.
+The original download URL and timestamp of the current archive have not been independently verified in the project metadata.
+
+---
 
 ## 5. Data Architecture
 
-The platform uses a Bronze, Silver, and Gold architecture.
+The platform follows a Bronze–Silver–Gold architecture.
 
-### Bronze Layer
+### Architecture Overview
 
-The Bronze layer contains extracted GTFS source files.
+```text
+             GTFS Data Source
+                    |
+                    v
+          Local Cloud Ingestion
+          Storage + Message Queue
+                    |
+                    v
+             BRONZE LAYER
+             Raw GTFS Files
+                    |
+                    v
+             SILVER LAYER
+          Cleaned Parquet Data
+                    |
+                    v
+              GOLD LAYER
+          DuckDB / SQL Analytics
+                    |
+             +------+------+
+             |             |
+             v             v
+         PostgreSQL     Streamlit
+          Database      Dashboard
+```
+
+### 5.1 Bronze Layer
 
 **Location:** `data/bronze/`
 
+The Bronze layer contains extracted GTFS source files.
+
 The ingestion process checks the required files before extracting the archive.
 
-### Silver Layer
-
-The Silver layer contains cleaned and validated datasets stored in Apache Parquet format.
+### 5.2 Silver Layer
 
 **Location:** `data/silver/`
+
+The Silver layer contains cleaned and validated Parquet datasets.
 
 Processing includes:
 
@@ -122,12 +173,11 @@ Processing includes:
 - Identifier validation
 - Duplicate detection
 - Coordinate validation
-- Timetable and route-field validation
-- Calendar and service-date processing
+- Calendar processing
 - Referential integrity checks
-- Conversion to Parquet
+- Parquet conversion
 
-The main Silver datasets are:
+#### Verified Silver Data
 
 | Dataset | Records |
 |---|---:|
@@ -138,30 +188,32 @@ The main Silver datasets are:
 | Calendar | 4,485 |
 | Calendar Dates | 205,448 |
 
-### Gold Layer
-
-The Gold layer contains analytical datasets generated with DuckDB and SQL.
+### 5.3 Gold Layer
 
 **Location:** `data/gold/`
 
-| Dataset | Description | Records |
+The Gold layer contains analytical datasets generated using DuckDB and SQL.
+
+| Dataset | Analysis | Records |
 |---|---|---:|
 | `top_stops.parquet` | Stops ranked by scheduled stop events | 20 |
 | `top_routes.parquet` | Routes ranked by scheduled trips | 20 |
 | `stop_connectivity.parquet` | Stops ranked by distinct serving routes | 20 |
 | `service_by_weekday.parquet` | Scheduled service analysis by weekday | 7 |
 
-The SQL queries are stored in the `sql/` directory.
+SQL queries are stored in the `sql/` directory.
 
-These results describe scheduled services, not actual passenger counts or real-time transport performance.
+**Note:** These results represent scheduled transport services, not passenger counts, actual vehicle movements, or real-time delays.
+
+---
 
 ## 6. Local Cloud and Event-Driven Ingestion
 
-The platform includes a local cloud simulation for demonstrating object storage and event-driven processing without provisioning AWS resources.
+The platform includes a local cloud simulation to demonstrate object storage and event-driven processing.
 
 ### Local Object Storage
 
-The `LocalStorage` implementation provides file upload and download operations.
+The `LocalStorage` implementation provides upload and download operations.
 
 Objects are stored under:
 
@@ -169,77 +221,235 @@ Objects are stored under:
 
 The implementation includes object-key validation and path safety checks.
 
-This demonstrates S3-style object storage concepts, but it is not an actual AWS S3 service.
-
 ### Local Message Queue
 
-The `LocalMessageQueue` implementation provides:
+The `LocalMessageQueue` implementation supports:
 
 - Message publishing
 - Message receiving
 - Message acknowledgement
-- Processing-attempt tracking
 - Retry handling
+- Processing-attempt tracking
 - Dead-letter queue behavior
 
-The queue operates in Python memory.
+The queue operates in Python memory and is not persistent across process restarts.
 
-It does not provide the persistence or distributed messaging capabilities of AWS SQS.
+### Ingestion Workflow
 
-### Integrated Ingestion Workflow
-
-The integrated workflow performs these operations:
+The workflow:
 
 1. Stages the GTFS archive in local object storage.
 2. Publishes a `gtfs_staged` event.
-3. Receives the event through the local queue.
-4. Downloads the archived object.
+3. Receives the event.
+4. Downloads the staged archive.
 5. Verifies file size and SHA-256 checksum.
-6. Replaces the pipeline input archive after successful verification.
+6. Replaces the input archive after successful verification.
 7. Acknowledges the processed message.
 
-The workflow is implemented in:
+**Implementation:** `src/cloud/run_gtfs_ingestion.py`
 
-`src/cloud/run_gtfs_ingestion.py`
+These are local simulations, not actual AWS S3 or SQS services.
 
-The publisher and consumer operate within one Python process because the queue is in-memory.
+---
 
 ## 7. Apache Airflow Orchestration
 
-Apache Airflow coordinates the end-to-end pipeline.
+Apache Airflow coordinates the data processing pipeline.
 
 **DAG ID:** `german_transport_pipeline`
 
+**DAG file:** `airflow/dags/transport_pipeline.py`
+
 **Execution mode:** Manual (`schedule=None`)
 
-The DAG currently contains 12 sequential tasks.
+### Pipeline Tasks
 
-| Step | Airflow Task | Purpose |
-|---|---|---|
+| Step | Task | Responsibility |
+|---:|---|---|
 | 1 | `cloud_ingestion` | Local cloud-style ingestion |
 | 2 | `ingest_gtfs` | Extract and validate GTFS archive |
-| 3 | `create_manifest` | Generate archive metadata and SHA-256 |
+| 3 | `create_manifest` | Generate metadata and SHA-256 |
 | 4 | `clean_stops` | Clean stop records |
 | 5 | `clean_routes` | Clean route records |
 | 6 | `clean_trips` | Clean trip records |
-| 7 | `clean_stop_times` | Clean timetable records |
+| 7 | `clean_stop_times` | Clean timetable events |
 | 8 | `clean_calendar` | Process service calendars |
 | 9 | `check_relationships` | Validate data relationships |
 | 10 | `build_gold` | Generate analytical datasets |
-| 11 | `generate_quality_report` | Generate data quality report |
+| 11 | `generate_quality_report` | Generate quality report |
 | 12 | `run_quality_tests` | Execute automated tests |
 
-Each task must complete successfully before the next task begins.
+### Execution Status
 
-The DAG runs in Docker using project directories mounted from the local machine.
+A previous full pipeline execution completed all 12 tasks successfully.
 
-**Latest verified execution:** November 16, 2026.
+After recreating the Airflow container, all 12 task definitions were successfully rediscovered.
 
-**Result:** All 12 Airflow tasks completed successfully.
+A new complete execution after the container recreation has not yet been verified.
 
-## 8. Dataset Metadata and Lineage
+**Current limitation:** PostgreSQL loading is not yet integrated into the Airflow DAG. The database loading scripts currently run separately.
 
-The project generates a metadata manifest for the GTFS source archive.
+---
+
+## 8. PostgreSQL Analytics Database
+
+The project includes a local PostgreSQL 16 database running in Docker.
+
+**Database:** `transport_analytics`
+
+**Database user:** `transport_user`
+
+**Docker container:** `german_transport_postgres`
+
+PostgreSQL stores analytical datasets generated by the Gold layer.
+
+### PostgreSQL Tables
+
+| Table | Primary Key | Verified Records |
+|---|---|---:|
+| `top_stops` | `stop_id` | 20 |
+| `top_routes` | `route_id` | 20 |
+| `stop_connectivity` | `stop_id` | 20 |
+| `service_by_weekday` | `weekday_number` | 7 |
+| **Total** | | **67** |
+
+### Python Loading Scripts
+
+The project currently includes four database loading scripts:
+
+```text
+src/load_gold_to_postgres.py
+src/load_top_routes_to_postgres.py
+src/load_stop_connectivity_to_postgres.py
+src/load_service_by_weekday_to_postgres.py
+```
+
+These scripts use Psycopg to connect Python to PostgreSQL.
+
+They validate the source datasets and use:
+
+`INSERT ... ON CONFLICT DO UPDATE`
+
+This allows existing records to be updated without creating duplicate primary-key entries.
+
+### PostgreSQL Setup
+
+Create a local file:
+
+`docker/postgres/.env`
+
+Add:
+
+```dotenv
+POSTGRES_PASSWORD=your_own_strong_password
+```
+
+Never commit this file to GitHub.
+
+Start PostgreSQL:
+
+```bash
+docker compose -f docker/postgres/docker-compose.yml up -d
+```
+
+Check database availability:
+
+```bash
+docker exec german_transport_postgres pg_isready -U transport_user -d transport_analytics
+```
+
+### Database Initialization
+
+The four PostgreSQL tables have been created and tested locally.
+
+**Current limitation:** Table creation has been performed manually. A version-controlled database initialization script has not yet been added.
+
+On a new machine, the tables must be created before running the loading scripts.
+
+### Load Gold Data into PostgreSQL
+
+After generating the Gold datasets and creating the tables, run:
+
+```bash
+python src/load_gold_to_postgres.py
+python src/load_top_routes_to_postgres.py
+python src/load_stop_connectivity_to_postgres.py
+python src/load_service_by_weekday_to_postgres.py
+```
+
+The first loader supports environment-based database connection settings. The other three currently use local connection defaults.
+
+### Verify PostgreSQL Data
+
+```bash
+docker exec german_transport_postgres psql -U transport_user -d transport_analytics -c "SELECT 'top_stops' AS table_name, COUNT(*) AS total_rows FROM top_stops UNION ALL SELECT 'top_routes', COUNT(*) FROM top_routes UNION ALL SELECT 'stop_connectivity', COUNT(*) FROM stop_connectivity UNION ALL SELECT 'service_by_weekday', COUNT(*) FROM service_by_weekday;"
+```
+
+Expected table counts:
+
+```text
+top_stops           20
+top_routes          20
+stop_connectivity   20
+service_by_weekday   7
+```
+
+### Docker Networking
+
+Airflow and PostgreSQL communicate through a shared Docker network.
+
+The Airflow Compose configuration references the external network:
+
+`postgres_default`
+
+PostgreSQL must be started before Airflow so this network exists.
+
+The Psycopg dependency is included in the Airflow container's startup configuration.
+
+**Important:** PostgreSQL is running locally in Docker. It is not an actual AWS RDS deployment.
+
+---
+
+## 9. Data Quality and Validation
+
+The project generates a structured data quality report.
+
+**Script:** `src/generate_quality_report.py`
+
+**Output:** `data/metadata/quality_report.json`
+
+The report includes:
+
+- Dataset row counts
+- Dataset column counts
+- Missing key-value checks
+- Duplicate identifier checks
+- Referential integrity checks
+- Overall validation status
+- Reported issues
+
+### Latest Verified Quality Results
+
+| Quality Check | Result |
+|---|---:|
+| Datasets checked | 10 |
+| Duplicate stop IDs | 0 |
+| Duplicate route IDs | 0 |
+| Duplicate trip IDs | 0 |
+| Unknown trip references | 0 |
+| Unknown stop references | 0 |
+| Reported issues | 0 |
+| Overall status | **PASS** |
+
+All configured quality checks passed for the tested dataset.
+
+This does not mean that every possible data quality issue has been tested.
+
+---
+
+## 10. Dataset Metadata and Integrity
+
+The project generates a metadata manifest for the GTFS archive.
 
 **Script:** `src/create_manifest.py`
 
@@ -257,95 +467,55 @@ The manifest includes:
 - Source URL field
 - Download timestamp field
 
-Unverified source information is recorded as null rather than invented.
+Unverified source information is recorded as null.
 
-The manifest is generated automatically during Airflow execution.
+The manifest provides basic source-file traceability and integrity metadata.
 
-This provides basic source-file traceability and integrity metadata.
+It is not a complete column-level lineage system.
 
-It is not a complete column-level data lineage system.
+---
 
-## 9. Data Quality and Validation
-
-The project generates a structured data quality report.
-
-**Script:** `src/generate_quality_report.py`
-
-**Output:** `data/metadata/quality_report.json`
-
-The report includes:
-
-- Dataset row counts
-- Dataset column counts
-- Missing key-value counts
-- Duplicate identifier counts
-- Referential integrity results
-- Overall validation status
-- Reported issues
-
-### Latest Verified Results
-
-| Quality Check | Result |
-|---|---:|
-| Datasets checked | 10 |
-| Duplicate stop IDs | 0 |
-| Duplicate route IDs | 0 |
-| Duplicate trip IDs | 0 |
-| Unknown trip references | 0 |
-| Unknown stop references | 0 |
-| Reported issues | 0 |
-
-**Overall status: PASS**
-
-All currently configured quality checks passed.
-
-This does not imply that every possible data quality issue has been tested.
-
-The report is generated automatically as part of the Airflow pipeline.
-
-## 10. Interactive Analytics Dashboard
+## 11. Interactive Analytics Dashboard
 
 The platform includes an interactive dashboard built with Streamlit and Plotly.
 
 **Application:** `dashboard/app.py`
 
-The dashboard reads Gold-layer Parquet datasets and the data quality report.
-
 ### Dashboard Features
 
 **Overview**
 
-Displays:
+Displays key metrics including:
 
 - Total stops
 - Total routes
 - Total scheduled trips
 - Total stop-time records
-- Current data quality status
+- Data quality status
 
 **Top Stops**
 
-Interactive horizontal bar chart showing stops ranked by scheduled stop events.
+Displays stops ranked by scheduled stop events.
 
 **Top Routes**
 
-Interactive chart showing routes ranked by scheduled trips.
+Displays routes ranked by scheduled trips.
 
 **Stop Connectivity**
 
-Interactive chart showing stops with the highest number of distinct serving routes.
+Displays stops with the highest number of distinct serving routes.
 
 **Weekly Service Patterns**
 
-Interactive chart showing average scheduled trips per active service date for each weekday.
+Displays average scheduled trips per active service date for each weekday.
 
 **Data Quality**
 
-Displays the current validation status, reported issues, and detailed JSON quality report.
+Displays validation status, reported issues, and the quality report.
 
 ### Interactive Features
 
-- Sidebar chart filters
+- Sidebar filters
 - Interactive Plotly charts
 - Hover information
 - Expandable data tables
@@ -355,7 +525,7 @@ Displays the current validation status, reported issues, and detailed JSON quali
 
 From the project root:
 
-```powershell
+```bash
 python -m streamlit run dashboard/app.py
 ```
 
@@ -363,15 +533,19 @@ Open:
 
 http://localhost:8501
 
-The dashboard requires Gold-layer datasets generated by the pipeline.
+The dashboard reads Gold Parquet files and the quality report.
 
-## 11. Testing and Continuous Integration
+It does not currently query PostgreSQL directly.
+
+---
+
+## 12. Testing and Continuous Integration
 
 The project uses Pytest for automated validation.
 
 Tests cover:
 
-- GTFS cleaning and transformations
+- GTFS ingestion and transformations
 - Required fields and identifiers
 - Calendar processing
 - Data relationships
@@ -381,131 +555,167 @@ Tests cover:
 - Queue acknowledgement and retries
 - Dead-letter queue behavior
 - Archive integrity verification
-- Manifest generation
+- Metadata generation
 - Data quality reporting
 
 ### Verified Test Results
 
 | Environment | Result |
 |---|---|
-| Windows local environment | 90 tests passed |
-| GitHub Actions CI | 58 tests passed |
-| Apache Airflow | 12 of 12 tasks successful |
+| Local Windows environment | 90 tests passed |
+| GitHub Actions | 58 tests passed |
+| Previous full Airflow execution | 12 of 12 tasks successful |
 
-The latest confirmed GitHub Actions result relates to commit `9c274e4`.
+The dashboard and 12-task Airflow changes were previously committed and pushed to GitHub.
 
-The newer Dashboard and 12-task Airflow changes have not yet been committed and pushed at the time of this README update.
+**Commit:** `b15084f`
 
-### GitHub Actions
-
-Workflow:
-
-`.github/workflows/ci.yml`
-
-GitHub Actions runs dataset-independent tests because the large GTFS and Parquet files are not committed to the repository.
-
-The complete dataset-dependent test suite is executed locally after the required datasets are generated.
+The newer PostgreSQL changes have not yet been verified by GitHub Actions.
 
 ### Run Local Tests
 
-```powershell
+```bash
 python -m pytest tests/ -q
 ```
 
-## 12. Running the Project
+GitHub Actions runs dataset-independent tests because the large GTFS and Parquet files are not committed to the repository.
+
+The full dataset-dependent test suite runs locally after the required datasets are generated.
+
+---
+
+## 13. Running the Project
 
 ### Prerequisites
 
 - Python 3.10 or a compatible version
-- Docker Desktop
-- Docker Compose
 - Git
-- Access to the VBB GTFS dataset
+- Docker and Docker Compose
+- Access to a compatible VBB GTFS archive
+- Available ports 8080, 8501, and 5432
+
+The project is intended to support Windows, Linux, and macOS.
+
+Some setup steps are still being improved for fully reproducible execution on a new machine.
 
 ### Step 1 — Clone the Repository
 
-```powershell
+```bash
 git clone https://github.com/emannazari777-ops/German-Public-Transport-Data-Engineering-Platform.git
-
 cd German-Public-Transport-Data-Engineering-Platform
 ```
 
 ### Step 2 — Create a Virtual Environment
 
-```powershell
+```bash
 python -m venv .venv
 ```
 
-Activate it in Windows PowerShell:
+Activate it:
+
+**Windows PowerShell:**
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
+**Linux / macOS:**
+
+```bash
+source .venv/bin/activate
+```
+
 ### Step 3 — Install Dependencies
 
-```powershell
+```bash
 python -m pip install -r requirements.txt
 ```
 
-The requirements file must include the Dashboard dependencies before the next GitHub release.
+The PostgreSQL loading scripts also require:
+
+```bash
+python -m pip install "psycopg[binary]"
+```
+
+This dependency is being added to the project requirements as part of the PostgreSQL integration update.
 
 ### Step 4 — Prepare GTFS Data
 
-Download a compatible GTFS archive from the VBB data provider.
+Download a compatible GTFS archive from VBB.
 
-Place the archive at:
+Place it at:
 
 `data/raw/gtfs.zip`
 
-The archive must contain the required GTFS files.
+The archive is not included in the GitHub repository.
 
-The dataset is not included in GitHub.
+### Step 5 — Start PostgreSQL
 
-### Step 5 — Start Apache Airflow
+Create:
 
-```powershell
+`docker/postgres/.env`
+
+Add a strong password:
+
+```dotenv
+POSTGRES_PASSWORD=your_own_strong_password
+```
+
+Then start PostgreSQL:
+
+```bash
+docker compose -f docker/postgres/docker-compose.yml up -d
+```
+
+### Step 6 — Start Airflow
+
+```bash
 docker compose -f airflow/docker-compose.yml up -d
 ```
 
-Open the Airflow interface:
+Open:
 
 http://localhost:8080
 
-### Step 6 — Execute the Pipeline
+### Step 7 — Execute the Pipeline
 
 In the Airflow interface:
 
-1. Locate `german_transport_pipeline`.
+1. Find `german_transport_pipeline`.
 2. Enable the DAG if necessary.
 3. Trigger a manual run.
 4. Monitor all 12 tasks.
-5. Confirm that the DAG finishes successfully.
+5. Confirm successful completion.
 
-### Step 7 — Inspect the Results
+### Step 8 — Inspect the Results
 
-After successful execution, check:
+Generated datasets are stored in:
 
-- `data/bronze/`
-- `data/silver/`
-- `data/gold/`
-- `data/metadata/`
+```text
+data/bronze/
+data/silver/
+data/gold/
+data/metadata/
+```
 
-The Gold directory should contain:
+The Gold layer should contain:
 
-- `top_stops.parquet`
-- `top_routes.parquet`
-- `stop_connectivity.parquet`
-- `service_by_weekday.parquet`
+```text
+top_stops.parquet
+top_routes.parquet
+stop_connectivity.parquet
+service_by_weekday.parquet
+```
 
-The metadata directory should contain:
+### Step 9 — Load PostgreSQL
 
-- `gtfs_manifest.json`
-- `quality_report.json`
+After manually creating the four database tables, run the loading scripts listed in Section 8.
 
-### Step 8 — Start the Dashboard
+Database schema initialization and automated loading through Airflow are still being developed.
 
-```powershell
+### Step 10 — Start the Dashboard
+
+```bash
 python -m streamlit run dashboard/app.py
 ```
 
@@ -513,15 +723,15 @@ Open:
 
 http://localhost:8501
 
-### Step 9 — Run Tests
+### Step 11 — Run Tests
 
-```powershell
+```bash
 python -m pytest tests/ -q
 ```
 
-The complete test suite requires locally generated datasets.
+---
 
-## 13. Project Structure
+## 14. Project Structure
 
 ```text
 German-Public-Transport-Data-Engineering-Platform/
@@ -546,9 +756,12 @@ German-Public-Transport-Data-Engineering-Platform/
 |   |-- metadata/
 |   `-- cloud_storage/
 |
-|-- docs/
-|
 |-- docker/
+|   `-- postgres/
+|       |-- docker-compose.yml
+|       `-- .env
+|
+|-- docs/
 |
 |-- sql/
 |   |-- top_stops.sql
@@ -573,76 +786,105 @@ German-Public-Transport-Data-Engineering-Platform/
 |   |-- check_relationships.py
 |   |-- run_gold.py
 |   |-- create_manifest.py
-|   `-- generate_quality_report.py
+|   |-- generate_quality_report.py
+|   |-- load_gold_to_postgres.py
+|   |-- load_top_routes_to_postgres.py
+|   |-- load_stop_connectivity_to_postgres.py
+|   `-- load_service_by_weekday_to_postgres.py
 |
 |-- tests/
+|
 |-- .gitignore
 |-- requirements.txt
 `-- README.md
 ```
 
-The `data/` directory contains local datasets and generated outputs and is excluded from Git.
+The `data/` directory contains local datasets and generated outputs that are excluded from Git.
 
-## 14. Current Scope and Limitations
+The `.env` file contains local database credentials and must never be committed.
 
-The platform is functional in a local development environment, with the following limitations:
+---
 
-**Regional coverage:** The current dataset covers Berlin–Brandenburg, not all of Germany.
+## 15. Current Scope and Limitations
 
-**Local cloud simulation:** Storage and messaging are implemented locally rather than through actual AWS services.
+The platform currently provides:
 
-**In-memory queue:** Queue messages do not persist across process restarts.
+- Regional GTFS ingestion
+- Bronze, Silver, and Gold data processing
+- SQL analytics
+- Data quality monitoring
+- Local cloud-style ingestion
+- Twelve-task Airflow orchestration
+- Interactive Streamlit dashboard
+- Four PostgreSQL analytical tables
+- Automated testing and GitHub Actions
 
-**Manual orchestration:** The Airflow DAG uses manual triggering rather than a recurring schedule.
+### Current Limitations
 
-**Scheduled timetable data:** The project does not contain actual passenger counts, live vehicle positions, or real-time delays.
+**Geographic coverage:** The current dataset covers Berlin–Brandenburg, not all of Germany.
 
-**Local dataset dependency:** Full pipeline execution requires the source GTFS archive.
+**Cloud services:** AWS S3, SQS, EC2, RDS, IAM, and Lambda are not deployed.
 
-**CI scope:** GitHub Actions runs dataset-independent tests rather than the complete dataset-dependent integration suite.
+**Local message queue:** Messages are stored in memory and do not survive process restarts.
 
-These limitations distinguish implemented functionality from planned extensions.
+**Airflow scheduling:** The DAG is manually triggered.
 
-## 15. Future Improvements
+**PostgreSQL integration:** The Gold datasets have been loaded successfully, but loading is not yet automated through Airflow.
+
+**Database initialization:** PostgreSQL table creation is not yet automated.
+
+**Reproducibility:** Fresh-machine installation and cross-platform execution still require additional validation.
+
+**Real-time analytics:** The project does not currently process live vehicle locations, real-time delays, or passenger counts.
+
+---
+
+## 16. Next Development Steps
+
+The remaining priorities are:
+
+1. Complete PostgreSQL and Airflow integration.
+2. Automate PostgreSQL table initialization.
+3. Add database loading tasks to the Airflow pipeline.
+4. Verify a complete end-to-end pipeline execution.
+5. Improve cross-platform Docker setup.
+6. Complete final testing and documentation.
+7. Publish the verified updates to GitHub.
 
 Potential future improvements include:
 
-- S3-compatible local API integration
-- SQS-compatible local messaging integration
-- Lambda-style event processing simulation
-- IAM-style access-control demonstrations
-- PostgreSQL integration as a local database service
-- Docker-based server deployment demonstrations
-- Scheduled GTFS ingestion
+- Actual AWS integration
 - Persistent message processing
-- Improved operational monitoring
-- Additional regional GTFS feeds
-- Further Dashboard enhancements
+- Scheduled GTFS ingestion
+- Additional German regional GTFS feeds
+- Improved monitoring and alerting
+- Further dashboard enhancements
 
-These capabilities are planned extensions and are not presented as completed features.
+These are future improvements and are not presented as completed features.
 
-## 16. Conclusion
+---
 
-The German Public Transport Data Engineering Platform demonstrates an end-to-end local data engineering workflow.
+## 17. Conclusion
+
+The German Public Transport Data Engineering Platform demonstrates a practical end-to-end data engineering workflow.
 
 The implementation combines:
 
-- Event-driven ingestion simulation
+- Data ingestion
 - Layered data processing
 - SQL analytics
 - Workflow orchestration
-- Automated data validation
+- PostgreSQL storage
+- Data validation
 - Metadata and integrity tracking
 - Interactive visualization
 - Automated testing
 - Continuous integration
 
-The platform provides a practical foundation for further development toward cloud-based data engineering systems.
+The project provides a foundation for further development toward production-oriented and cloud-based data engineering systems.
 
 ---
 
-**Author:** Eman Nazari
-
-**Project:** German Public Transport Data Engineering Platform
-
+**Author:** Eman Nazari  
+**Project:** German Public Transport Data Engineering Platform  
 **Repository:** https://github.com/emannazari777-ops/German-Public-Transport-Data-Engineering-Platform

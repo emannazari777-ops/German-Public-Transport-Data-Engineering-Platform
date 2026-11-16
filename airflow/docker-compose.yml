@@ -1,12 +1,16 @@
+
 services:
   airflow:
     image: apache/airflow:3.1.0
     container_name: german_transport_airflow
+
     ports:
       - "8080:8080"
+
     environment:
       AIRFLOW__CORE__LOAD_EXAMPLES: "False"
-      _PIP_ADDITIONAL_REQUIREMENTS: "duckdb pandas pyarrow requests pytest"
+      _PIP_ADDITIONAL_REQUIREMENTS: "duckdb pandas pyarrow requests pytest psycopg[binary]"
+
     volumes:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
@@ -15,5 +19,16 @@ services:
       - ../sql:/opt/airflow/project/sql
       - ../data:/opt/airflow/project/data
       - ../tests:/opt/airflow/project/tests
+
+    networks:
+      - default
+      - postgres_network
+
     working_dir: /opt/airflow/project
+
     command: standalone
+
+networks:
+  postgres_network:
+    external: true
+    name: postgres_default

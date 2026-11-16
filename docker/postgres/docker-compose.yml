@@ -1,0 +1,28 @@
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: german_transport_postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: transport_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: transport_analytics
+
+    ports:
+      - "127.0.0.1:5432:5432"
+
+    volumes:
+      - transport_postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U transport_user -d transport_analytics
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  transport_postgres_data:

@@ -6,3 +6,4 @@ pyarrow
 pytest
 streamlit==1.65.0
 plotly==7.1.0
+psycopg[binary]
